@@ -51,10 +51,10 @@ pub fn get_secret(public_key: &BigUint, private_key: &BigUint, modulus: &BigUint
 }
 
 // Returns (private key, public key) tuple
-pub fn gen_key_pair() -> (BigUint, BigUint) {
+pub fn gen_key_pair() -> (Vec<u8>, Vec<u8>) {
     let private_key = get_private_key();
     let public_key = get_public_key(&private_key);
-    (private_key, public_key)
+    (private_key.to_bytes_be(), public_key.to_bytes_be())
 }
 
 
