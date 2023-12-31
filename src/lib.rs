@@ -2,7 +2,7 @@ mod domain_parameters;
 
 use domain_parameters::{get_modulus, get_group_order, get_generator};
 use rand::thread_rng;
-use num_traits::{Zero, One};
+use num_traits::{Zero, One, ToBytes};
 use num_bigint::{BigUint, RandBigInt};
 use bitvec::prelude::*;
 
@@ -45,9 +45,20 @@ fn get_public_key(private_key: &BigUint) -> BigUint {
     mod_exp(&get_generator(), private_key, &get_modulus())
 }
 
+pub fn get_domain_params() -> (Vec<u8>, Vec<u8>, Vec<u8>) {
+    let modulus = get_modulus();
+    let group_order = get_group_order();
+    let generator = get_generator();
+
+    (modulus.to_be_bytes(), group_order.to_be_bytes(), generator.to_be_bytes())
+}
+
 // To be used once we have received the other party's public key
-pub fn get_secret(public_key: &BigUint, private_key: &BigUint, modulus: &BigUint) -> Vec<u8> {
-    mod_exp(public_key, private_key, modulus).to_bytes_be()
+pub fn get_secret(public_key: &[u8], private_key: &[u8], modulus: &[u8]) -> Vec<u8> {
+    let base = BigUint::from_bytes_be(public_key);
+    let exp = BigUint::from_bytes_be(private_key);
+    let modulus_biguint = BigUint::from_bytes_be(modulus);
+    mod_exp(&base, &exp, &modulus_biguint).to_bytes_be()
 }
 
 // Returns (private key, public key) tuple
