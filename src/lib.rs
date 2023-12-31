@@ -46,8 +46,8 @@ fn get_public_key(private_key: &BigUint) -> BigUint {
 }
 
 // To be used once we have received the other party's public key
-pub fn get_secret(public_key: &BigUint, private_key: &BigUint, modulus: &BigUint) -> BigUint {
-    mod_exp(public_key, private_key, modulus)
+pub fn get_secret(public_key: &BigUint, private_key: &BigUint, modulus: &BigUint) -> Vec<u8> {
+    mod_exp(public_key, private_key, modulus).to_bytes_be()
 }
 
 // Returns (private key, public key) tuple
